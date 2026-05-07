@@ -1,44 +1,55 @@
-﻿# SEOSIRI: ENOSES CORE ARCHITECT v53.0
-**Founder & Vibe Architect:** Momenul Ahmad | [SEOSIRI.COM](https://seosiri.com)
+﻿# SEOSIRI: ENOSES CORE ARCHITECT v54.0
+> **Multimodal Intelligence Mesh for Global Crisis Management & Precision Agriculture.**
 
-## 🌐 Vision
-ENOSES (Electronic Nose Ecosystem) is an **International Industrial Standard** multimodal intelligence framework. It repurposes standard hardware (HP Pro x2) into a high-fidelity sensing node that bridges physical reality with global cloud telemetry.
-
----
-
-## 🚀 Part One: The Core Engine (Python)
-The backend engine performs high-speed Digital Signal Processing (DSP) to classify environmental anomalies.
-
-### 🛠️ Core Features:
-- **9 Industrial Sectors:** Rescue, Agri-Tech, Aerospace, Ocean, Mining, Space, Environment, Climate, Emergency.
-- **Multimodal Sensing:** 32 explicit logic gates for Human/Dog life signs, Jet/Drone tracking, and Pest Chitin resonance.
-- **Robotics API:** Broadcasts direct `robotics_cmd` (e.g., NAVIGATE_TO_SOURCE, ALL_STOP) via JSON.
-- **Persistence:** Local D-Drive CSV "Black Box" logging for audit compliance.
-
-### 💻 Part One Setup:
-1. `git clone https://github.com/SEOSiri-Official/ENOSES.git`
-2. `pip install -r requirements.txt`
-3. `python src/enoses_core.py`
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![Python: 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)
+![Status: Operational](https://img.shields.io/badge/Status-Operational-brightgreen.svg)
+![Industry: Industrial_IoT](https://img.shields.io/badge/Industry-Industrial_IoT-cyan.svg)
 
 ---
 
-## 📊 Part Two: Intelligence Dashboard (The Face)
-A high-performance HTML5/JS interface designed for real-time remote monitoring and telemetric analysis.
+## 🏛️ Project Vision
+**ENOSES** (Electronic Nose Ecosystem) is a sovereign multimodal framework engineered by **Momenul Ahmad**. It repurposes the **HP Pro x2 Multimodal Array** into a high-fidelity sensing node. By bridging physical acoustic waves and optical data through a global cloud broker, ENOSES delivers real-time, actionable intelligence to 9 critical global sectors.
 
-### 🛠️ Dashboard Features:
-- **8-Metric Grid:** Live display of Intensity, Frequency, Moisture, Density, Weight, Ozone, Altitude, and Depth.
-- **Satellite Vision:** PIP (Picture-in-Picture) window showing real-time periodic image captures from the field.
-- **Vision AI:** Integrated pixel-analysis for optical Fire and Lightning detection.
-- **Tactical Terminal:** Neon-green typing effect for high-contrast intelligence summaries.
-- **Global Search:** Instant filtering of incoming data packets for large-scale operations.
-
-### 📱 Part Two Setup (Universal Device Compatibility):
-1. Navigate to the `dashboard/` folder.
-2. Open `index.html` in any modern browser (Android, Desktop, or Tablet).
-3. Ensure the browser is connected to the internet to receive the MQTT stream from the Global Broker.
+### 🌐 Founder & Architect
+**Momenul Ahmad**  
+Founder of [SEOSIRI.COM](https://seosiri.com)  
+*Vibe Architect & Multimodal Systems Engineer*
 
 ---
 
-## ⚖️ Licensing & Attribution
-Copyright © 2026 Momenul Ahmad. All rights reserved.
-Branded and Maintained by **SEOSiri-Official**.
+## 🛠️ Core Capabilities (9 Industrial Sectors)
+| Sector | Objective | Signal Logic |
+| :--- | :--- | :--- |
+| **Search & Rescue** | Survivor Detection | Rhythmic Human/Canine Respiration |
+| **Agriculture** | Crop Protection | Pest Chitin Resonance & Thermal Crackle |
+| **Aerospace** | Target Tracking | Jet/Drone Mechanical Frequency Extraction |
+| **Ocean** | Marine Defense | Hydro-acoustic Sonar & Bio-sync |
+| **Mining** | Structural Safety | Subterranean Seismic Fracture Detection |
+| **Climate** | Hazard Warning | Sand, Snow, and Thunderstorm Classification |
+| **Space** | Quantum Analysis | Meta-Material Entry Friction Resonance |
+| **Emergency** | Global Defense | Kinetic Impact & Rocket Launch Ballistics |
+| **Environment** | Wildlife Tracking | High-frequency Avian Biological Patterns |
+
+---
+
+## 🚀 Technical Architecture
+
+### Part One: The Sensing Engine (Python)
+The backend leverages **Fast Fourier Transform (FFT)** and **RMS Signal Processing** to translate physical air pressure into a standardized JSON Robotics API.
+- **Protocol:** MQTT v5.0 (EMQX Industrial Cloud)
+- **Persistence:** Local D-Drive CSV "Black Box" Logging
+- **Uplink:** Sub-100ms Latency (Edge-to-Cloud)
+
+### Part Two: Intelligence Dashboard (The Face)
+An uncompressed HTML5/JavaScript dashboard for global remote monitoring.
+- **Vision AI:** Real-time pixel analysis for Optical Fire and Lightning detection.
+- **Telemetry:** 12 Multimodal metrics including Ozone (ppm) and Molecular Density.
+- **Accessibility:** WCAG 2.1 Compliant with ARIA-mapped live updates.
+
+---
+
+## 💻 Installation & Setup
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/SEOSiri-Official/ENOSES.git
