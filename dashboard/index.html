@@ -1,40 +1,68 @@
-﻿<!DOCTYPE html><html><head><title>SEOSIRI AGRI v63.0</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
-<style>
-body { background: #030303; color: #00e5ff; font-family: monospace; padding: 20px; }
-.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-.box { border: 1px solid #00e5ff; padding: 15px; text-align: center; background: rgba(0,229,255,0.05); }
-.val { font-size: 2em; font-weight: bold; color: #fff; display: block; }
-.terminal { background: #000; border: 1px solid #0f0; padding: 15px; color: #0f0; height: 250px; overflow-y: auto; }
-</style></head><body>
-<h1>SEOSIRI: AGRI-ARCHITECT CORE v63.0</h1>
-<div class="grid">
-<div class="box">INTENSITY<br><span id="vol" class="val">0.00dB</span></div>
-<div class="box">DENSITY<br><span id="dens" class="val">0.00ρ</span></div>
-<div class="box">MOISTURE<br><span id="moist" class="val">0.00%</span></div>
-<div class="box">OZONE<br><span id="o3" class="val">0.000</span></div></div>
-<div style="display:grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 20px;">
-<div class="box" style="text-align:left;"><h3>REPORT</h3><div id="report" class="terminal">> SCANNING...</div></div>
-<div class="box"><h3>SIGHT</h3><img id="v-img" src="" style="width:100%;"></div></div>
-<script>
-const client = new Paho.MQTT.Client("broker.emqx.io", 8084, "ui_" + Math.random());
-client.onMessageArrived = (msg) => {
-    const d = JSON.parse(msg.payloadString);
-    if(msg.destinationName.includes("telemetry")) {
-        if(d.metrics) {
-            document.getElementById('vol').innerText = d.metrics.intensity + "dB";
-            document.getElementById('dens').innerText = d.metrics.density + "ρ";
-            document.getElementById('moist').innerText = d.metrics.moisture + "%";
-            document.getElementById('o3').innerText = d.metrics.ozone;
-        }
-        if(d.analysis) {
-            const t = document.getElementById('report');
-            t.innerHTML += '<br>> [' + (d.metadata ? d.metadata.ts : 'SYNC') + '] ' + d.analysis.sector + ': ' + d.analysis.desc;
-            t.scrollTop = t.scrollHeight;
-        }
-    } else { document.getElementById('v-img').src = "data:image/jpeg;base64," + d.image_data; }
-};
-client.connect({useSSL: true, onSuccess: () => { 
-    client.subscribe("seosiri/enoses/telemetry"); client.subscribe("seosiri/enoses/vision"); 
-}});
-</script></body></html>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>SEOSIRI: AGRI-MESH COMMAND</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+    <style>
+        :root { --cyan: #00e5ff; --gold: #ffd700; --bg: #030303; }
+        body { background: var(--bg); color: var(--cyan); font-family: monospace; padding: 15px; margin:0; }
+        .header { border-bottom: 2px solid var(--cyan); padding: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+        .box { border: 1px solid var(--cyan); padding: 10px; text-align: center; background: rgba(0,229,255,0.05); }
+        .val { font-size: 1.8em; font-weight: bold; color: #fff; display: block; }
+        .terminal { background: #000; border: 1px solid #0f0; padding: 10px; color: #0f0; height: 180px; overflow-y: auto; font-size: 1em; }
+        #vision { width: 100%; border: 2px solid var(--gold); border-radius: 5px; min-height: 200px; background: #111; }
+        .mesh-cmd { color: #f0f; font-weight: bold; background: rgba(255,0,255,0.1); padding: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div><h1 style="margin:0;">SEOSIRI AGRI-ARCHITECT v70.0</h1><small>FOUNDER: MOMENUL AHMAD | SEOSIRI.COM</small></div>
+        <div style="text-align:right;"><p id="status">MESH_STATUS: <span style="color:#0f0;">SYNCED</span></p></div>
+    </div>
+    <div class="grid">
+        <div class="box">MOISTURE<span id="moist" class="val">0.00%</span></div>
+        <div class="box">SOIL DENSITY<span id="dens" class="val">0.000ρ</span></div>
+        <div class="box">FUNGUS INDEX<span id="fungus" class="val">0.000</span></div>
+        <div class="box">DAYLIGHT<span id="light" class="val">0.00%</span></div>
+    </div>
+    <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-top: 15px;">
+        <div class="box" style="text-align:left;">
+            <h3>TACTICAL MESH REPORT</h3>
+            <div id="report" class="terminal">> AWAITING FIELD UPLINK...</div>
+            <p>CURRENT COMMAND: <span id="cmd" class="mesh-cmd">IDLE</span></p>
+        </div>
+        <div class="box">
+            <h3>FIELD SIGHT</h3>
+            <img id="v-img" src="" style="width:100%;">
+        </div>
+    </div>
+    <script>
+        const client = new Paho.MQTT.Client("broker.emqx.io", 8084, "seosiri_agri_" + Math.random());
+        client.onMessageArrived = (msg) => {
+            const data = JSON.parse(msg.payloadString);
+            if(msg.destinationName.includes("telemetry") || msg.destinationName.includes("mesh")) {
+                if(data.metrics) {
+                    document.getElementById('moist').innerText = data.metrics.moisture;
+                    document.getElementById('dens').innerText = data.metrics.density;
+                    document.getElementById('light').innerText = data.metrics.daylight;
+                }
+                if(data.analysis) {
+                    const term = document.getElementById('report');
+                    term.innerHTML += `<br>> [${data.metadata.timestamp}] ${data.analysis.sector}: ${data.analysis.description}`;
+                    term.scrollTop = term.scrollHeight;
+                    document.getElementById('cmd').innerText = data.analysis.robotics_cmd;
+                }
+            } else {
+                document.getElementById('v-img').src = "data:image/jpeg;base64," + data.base64_img;
+                document.getElementById('fungus').innerText = data.fungus_idx;
+            }
+        };
+        client.connect({useSSL: true, onSuccess: () => {
+            client.subscribe("seosiri/enoses/agri/telemetry");
+            client.subscribe("seosiri/enoses/agri/vision");
+            client.subscribe("seosiri/enoses/agri/mesh");
+        }});
+    </script>
+</body>
+</html>
