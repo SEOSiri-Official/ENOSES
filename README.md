@@ -33,6 +33,24 @@ Founder of [SEOSIRI.COM](https://seosiri.com)
 
 ---
 
+### graph TD
+    A[HP Pro x2 // Field Node] -->|Acoustic Waves| B(Python DSP Core)
+    A -->|Optical Frames| C(Vision AI Engine)
+    B -->|JSON Telemetry| D{EMQX Industrial Cloud}
+    C -->|Base64 Imagery| D
+    D -->|Real-time Routing| E[Tactical Command Dashboard]
+    D -->|Robotics API| F[Ground Robots / Drones]
+    E -->|Manual Override| F
+    subgraph "SEOSIRI SOVEREIGN NETWORK"
+    B
+    C
+    D
+    end
+    subgraph "DELIVERABLES"
+    E
+    F
+    end
+
 ## 🚀 Technical Architecture
 
 ### Part One: The Sensing Engine (Python)
@@ -47,9 +65,15 @@ An uncompressed HTML5/JavaScript dashboard for global remote monitoring.
 - **Telemetry:** 12 Multimodal metrics including Ozone (ppm) and Molecular Density.
 - **Accessibility:** WCAG 2.1 Compliant with ARIA-mapped live updates.
 
+## 🔗 The Sovereign Ecosystem:
+AURA_SEO_ENGINE: The Digital Intelligence layer providing keyword-driven environmental insights.
+SEOSIRI_ROBOTICS_ACTUATOR: The physical hardware controller that receives the robotics_cmd from ENOSES.
+MULTI_SATELLITE_UPLINK: The high-speed data-bridging layer for rural connectivity.
 ---
 
 ## 💻 Installation & Setup
 1. **Clone the Repository:**
    ```bash
    git clone https://github.com/SEOSiri-Official/ENOSES.git
+
+   cd ENOSES && pip install -r requirements.txt && python src/enoses_core.py
