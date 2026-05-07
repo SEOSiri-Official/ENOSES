@@ -9,57 +9,57 @@
         :root { --neon-cyan: #00e5ff; --neon-pink: #ff007f; --bg: #050505; }
         body { background: var(--bg); color: var(--neon-cyan); font-family: 'Segoe UI', monospace; margin: 0; padding: 20px; overflow-x: hidden; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .metric-box { border: 1px solid var(--neon-cyan); padding: 15px; background: rgba(0, 229, 255, 0.05); text-align: center; box-shadow: 0 0 10px rgba(0,229,255,0.1); }
-        .val { font-size: 2em; font-weight: bold; display: block; }
+        .metric-box { border: 1px solid var(--neon-cyan); padding: 15px; background: rgba(0, 229, 255, 0.05); text-align: center; }
+        .val { font-size: 2.2em; font-weight: bold; display: block; color: #fff; }
         #vision-stream { width: 100%; border: 2px solid var(--neon-pink); border-radius: 5px; }
-        .terminal { background: #000; border: 1px solid #00ff00; padding: 15px; color: #00ff00; height: 150px; overflow-y: auto; font-size: 0.9em; }
+        .terminal { background: #000; border: 1px solid #00ff00; padding: 15px; color: #00ff00; height: 180px; overflow-y: auto; font-size: 1.1em; line-height: 1.4; }
         .header { border-bottom: 2px solid var(--neon-cyan); margin-bottom: 20px; padding-bottom: 10px; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1 style="margin:0;">SEOSIRI: ENOSES CORE ARCHITECT v53.0</h1>
+        <h1 style="margin:0;">SEOSIRI: ENOSES CORE ARCHITECT</h1>
         <small>FOUNDER: MOMENUL AHMAD | SEOSIRI.COM</small>
     </div>
     <div class="grid">
         <div class="metric-box">INTENSITY<span id="vol" class="val">0.00dB</span></div>
-        <div class="metric-box">MOISTURE<span id="moist" class="val">0.00%</span></div>
+        <div class="metric-box">FREQUENCY<span id="freq" class="val">0Hz</span></div>
         <div class="metric-box">SOIL DENSITY<span id="dens" class="val">0.00ρ</span></div>
-        <div class="metric-box">OZONE<span id="o3" class="val">0.000</span></div>
+        <div class="metric-box">ALTITUDE<span id="alt" class="val">0.0m</span></div>
     </div>
     <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 20px;">
         <div class="metric-box" style="text-align:left;">
             <h3>SENSORY INTELLIGENCE REPORT</h3>
-            <div id="desc-terminal" class="terminal">> Awaiting Field Uplink...</div>
+            <div id="desc-terminal" class="terminal">> UPLINK ESTABLISHED. SCANNING...</div>
         </div>
         <div class="metric-box">
             <h3>FIELD SIGHT (VISION_RX)</h3>
-            <img id="vision-stream" src="" alt="Live Field Feed">
+            <img id="vision-stream" src="" style="width:100%;">
         </div>
     </div>
     <script>
-        const client = new Paho.MQTT.Client("broker.emqx.io", 8084, "seosiri_remote_" + Math.random());
+        const client = new Paho.MQTT.Client("broker.emqx.io", 8084, "seosiri_ui_" + Math.random());
         client.onMessageArrived = (msg) => {
             const data = JSON.parse(msg.payloadString);
-            if(msg.destinationName.includes("agri_core")) {
+            if(msg.destinationName === "seosiri/enoses/telemetry") {
                 if(data.metrics) {
-                    document.getElementById('vol').innerText = data.metrics.intensity;
-                    document.getElementById('moist').innerText = data.metrics.moisture;
-                    document.getElementById('dens').innerText = data.metrics.density;
-                    document.getElementById('o3').innerText = data.metrics.ozone;
+                    document.getElementById('vol').innerText = data.metrics.vol;
+                    document.getElementById('freq').innerText = data.metrics.freq;
+                    document.getElementById('dens').innerText = data.metrics.dens;
+                    document.getElementById('alt').innerText = data.metrics.alt;
                 }
                 if(data.analysis) {
                     const term = document.getElementById('desc-terminal');
                     term.innerHTML += `<br>> [${data.analysis.sector}] ${data.analysis.desc}`;
                     term.scrollTop = term.scrollHeight;
                 }
-            } else if (msg.destinationName.includes("vision")) {
+            } else {
                 document.getElementById('vision-stream').src = "data:image/jpeg;base64," + data.image_data;
             }
         };
         client.connect({useSSL: true, onSuccess: () => {
-            client.subscribe("google_io/2026/enoses/agri_core");
-            client.subscribe("google_io/2026/enoses/agri_vision");
+            client.subscribe("seosiri/enoses/telemetry");
+            client.subscribe("seosiri/enoses/vision");
         }});
     </script>
 </body>
