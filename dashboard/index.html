@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>SEOSIRI AGRI-MESH COMMAND</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+    <style>
+        body { background: #000; color: #0ff; font-family: 'Courier New', monospace; padding: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .box { border: 2px solid #0ff; padding: 20px; background: #050505; }
+        #vision { width: 100%; border: 2px solid #f0f; }
+        .btn { background: #0ff; color: #000; padding: 10px; border: none; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>SEOSIRI AGRI-ARCHITECT v53.0</h1>
+    <div class="grid">
+        <div class="box">
+            <h3>FIELD TELEMETRY</h3>
+            <p>MOISTURE: <span id="moist">0.0%</span></p>
+            <p>FUNGUS IDX: <span id="fungus">0.00</span></p>
+            <p>SITUATION: <span id="desc" style="color: #ff0;">AWAITING...</span></p>
+            <h2 id="cmd" style="color:#f0f;">IDLE</h2>
+        </div>
+        <div class="box">
+            <h3>FIELD SIGHT</h3>
+            <img id="vision" src="">
+        </div>
+    </div>
+    <div class="box" style="margin-top:20px;">
+        <h3>REMOTE COMMAND CENTER</h3>
+        <button class="btn" onclick="sendCommand('REQUEST_SITUATION')">COLLECT SITUATION REPORT</button>
+        <button class="btn" onclick="sendCommand('FORCE_HARVEST')" style="background: #ff0;">AUTHORIZE MANUAL HARVEST</button>
+    </div>
+
+    <script>
+        const client = new Paho.MQTT.Client("broker.emqx.io", 8084, "android_" + Math.random());
+        client.onMessageArrived = (msg) => {
+            const d = JSON.parse(msg.payloadString);
+            if(msg.destinationName.includes("mesh")) {
+                if(d.metrics) document.getElementById('moist').innerText = d.metrics.moist;
+                if(d.analysis) {
+                    document.getElementById('desc').innerText = d.analysis.desc;
+                    document.getElementById('cmd').innerText = d.analysis.cmd;
+                }
+            } else {
+                document.getElementById('vision').src = "data:image/jpeg;base64," + d.img;
+                document.getElementById('fungus').innerText = d.fungus;
+            }
+        };
+
+        function sendCommand(cmdText) {
+            const message = new Paho.Message(JSON.stringify({cmd: cmdText}));
+            message.destinationName = "seosiri/enoses/cmd/uplink";
+            client.send(message);
+            alert("COMMAND SENT: " + cmdText);
+        }
+
+        client.connect({useSSL: true, onSuccess: () => {
+            client.subscribe("seosiri/enoses/mesh");
+            client.subscribe("seosiri/enoses/vision");
+        }});
+    </script>
+</body>
+</html>
