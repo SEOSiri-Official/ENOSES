@@ -1,51 +1,54 @@
-﻿<!DOCTYPE html><html><head><title>SEOSIRI AGRI-CORE v73.0</title>
+﻿<!DOCTYPE html><html><head><title>SEOSIRI AGRI-CORE v80.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
 <style>
-:root { --cyan: #00e5ff; --bg: #030303; }
-body { background: var(--bg); color: var(--cyan); font-family: monospace; padding: 20px; margin:0; }
-.header { border-bottom: 2px solid var(--cyan); padding: 10px; margin-bottom: 20px; display:flex; justify-content:space-between; }
-.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-.box { border: 1px solid var(--cyan); padding: 20px; text-align: center; background: rgba(0,229,255,0.05); }
-.val { font-size: 2.2em; font-weight: bold; color: #fff; display: block; }
-.terminal { background: #000; border: 1px solid #0f0; padding: 15px; color: #0f0; height: 250px; overflow-y: auto; font-size: 1.1em; }
-#v-img { width: 100%; border: 1px solid #00e5ff; border-radius: 5px; }
+:root { --cyan: #00e5ff; --gold: #ffd700; --bg: #030303; }
+body { background: var(--bg); color: var(--cyan); font-family: monospace; padding: 15px; margin:0; overflow-x: hidden; }
+.header { border-bottom: 2px solid var(--cyan); padding: 10px; margin-bottom: 15px; display:flex; justify-content:space-between; align-items:center; }
+.grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.box { border: 1px solid var(--cyan); padding: 10px; text-align: center; background: rgba(0,229,255,0.05); }
+.val { font-size: 1.8em; font-weight: bold; color: #fff; display: block; }
+.terminal { background: #000; border: 1px solid #0f0; padding: 10px; color: #0f0; height: 200px; overflow-y: auto; font-size: 1.1em; line-height:1.4; }
+#v-img { width: 100%; border: 2px solid var(--gold); border-radius: 5px; background: #111; }
 </style></head><body>
 <div class="header">
-    <div><h1 style="margin:0;">SEOSIRI AGRI-ARCHITECT v73.0</h1><small>FOUNDER: MOMENUL AHMAD | SEOSIRI.COM</small></div>
-    <div style="text-align:right;"><p>UPLINK: <span style="color:#0f0;">AUTHENTIC</span></p></div>
+    <div><h1 style="margin:0;">SEOSIRI AGRI-ARCHITECT v80.0</h1><small>FOUNDER: MOMENUL AHMAD | SEOSIRI.COM</small></div>
+    <div style="text-align:right;"><p>UPLINK: <span style="color:#0f0;">AUTHENTIC_SYNC</span></p></div>
 </div>
 <div class="grid">
     <div class="box">INTENSITY<span id="vol" class="val">0.00dB</span></div>
-    <div class="box">DENSITY<span id="dens" class="val">0.000ρ</span></div>
+    <div class="box">SOIL DENSITY<span id="dens" class="val">0.000ρ</span></div>
     <div class="box">MOISTURE<span id="moist" class="val">0.00%</span></div>
     <div class="box">FUNGUS IDX<span id="fungus" class="val">0.000</span></div>
+    <div class="box">OZONE (O3)<span id="o3" class="val">0.000</span></div>
 </div>
-<div style="display:grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 20px;">
-    <div class="box" style="text-align:left;"><h3>REPORT</h3><div id="report" class="terminal">> SCANNING...</div><h2 id="cmd" style="color:#f0f;">IDLE</h2></div>
-    <div class="box"><h3>SIGHT</h3><img id="v-img" src=""></div>
+<div style="display:grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 15px;">
+    <div class="box" style="text-align:left;"><h3>TACTICAL INTELLIGENCE REPORT</h3><div id="report" class="terminal">> SCANNING FIELD...</div><h2 id="cmd" style="color:#f0f; margin-top:10px;">IDLE</h2></div>
+    <div class="box"><h3>FIELD SIGHT</h3><img id="v-img" src=""></div>
 </div>
 <script>
-const client = new Paho.MQTT.Client("broker.emqx.io", 8084, "ui_" + Math.random());
+const client = new Paho.MQTT.Client("broker.emqx.io", 8084, "seosiri_ui_" + Math.random());
 client.onMessageArrived = (msg) => {
-    const d = JSON.parse(msg.payloadString);
+    const data = JSON.parse(msg.payloadString);
     if(msg.destinationName.includes("telemetry")) {
-        if(d.metrics) {
-            document.getElementById('vol').innerText = d.metrics.vol + "dB";
-            document.getElementById('dens').innerText = d.metrics.dens + "ρ";
-            document.getElementById('moist').innerText = d.metrics.moist + "%";
+        if(data.metrics) {
+            document.getElementById('vol').innerText = data.metrics.vol + "dB";
+            document.getElementById('dens').innerText = data.metrics.dens + "ρ";
+            document.getElementById('moist').innerText = data.metrics.moist + "%";
+            document.getElementById('o3').innerText = data.metrics.o3 + "ppm";
         }
-        if(d.analysis) {
-            const t = document.getElementById('report');
-            t.innerHTML += '<br>> [' + (d.metadata ? d.metadata.ts : 'SYNC') + '] ' + d.analysis.sector + ': ' + d.analysis.desc;
-            t.scrollTop = t.scrollHeight;
-            document.getElementById('cmd').innerText = "CMD: " + d.analysis.cmd;
+        if(data.analysis && data.analysis.desc) {
+            const term = document.getElementById('report');
+            term.innerHTML += '<br>> [' + data.metadata.timestamp + '] ' + data.analysis.sector + ': ' + data.analysis.desc;
+            term.scrollTop = term.scrollHeight;
+            document.getElementById('cmd').innerText = "CMD: " + data.analysis.cmd;
         }
     } else {
-        document.getElementById('v-img').src = "data:image/jpeg;base64," + d.img;
-        document.getElementById('fungus').innerText = d.f_idx;
+        document.getElementById('v-img').src = "data:image/jpeg;base64," + data.img;
+        document.getElementById('fungus').innerText = data.fungus;
     }
 };
-client.connect({useSSL: true, onSuccess: () => { 
-    client.subscribe("seosiri/enoses/agri/telemetry"); client.subscribe("seosiri/enoses/agri/vision"); 
+client.connect({useSSL: true, onSuccess: () => {
+    client.subscribe("seosiri/enoses/agri/telemetry");
+    client.subscribe("seosiri/enoses/agri/vision");
 }});
 </script></body></html>
